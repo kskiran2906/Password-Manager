@@ -1,11 +1,21 @@
 import './index.css'
 
 const PasswordItem = props => {
-  const {passwordDetails} = props
+  const {passwordDetails, isChecked, deletePassword} = props
   const {id, website, username, password, initialClassName} = passwordDetails
+
+  const passwordItem = isChecked ? (
+    <p className="password">{password}</p>
+  ) : (
+    <img
+      src="https://assets.ccbp.in/frontend/react-js/password-manager-stars-img.png"
+      alt="stars"
+      className="stars"
+    />
+  )
   const initial = username ? website[0].toUpperCase() : ''
+
   const onDeletePassword = () => {
-    const {deletePassword} = props
     deletePassword(id)
   }
 
@@ -17,13 +27,7 @@ const PasswordItem = props => {
       <div>
         <p className="website">{website}</p>
         <p className="username">{username}</p>
-        <p className="password">
-          <img
-            src="https://assets.ccbp.in/frontend/react-js/password-manager-stars-img.png"
-            alt="stars"
-            className="stars"
-          />
-        </p>
+        <p className="password">{passwordItem}</p>
       </div>
       <div className="buttons-container">
         <button

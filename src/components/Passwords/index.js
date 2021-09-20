@@ -21,28 +21,9 @@ class Passwords extends Component {
     website: '',
     username: '',
     password: '',
+    search: '',
+    ischecked: false,
     passwordsList: [],
-  }
-
-  deletePassword = passwordId => {
-    const {passwordsList} = this.state
-    this.setState({
-      passwordsList: passwordsList.filter(
-        password => password.id !== passwordId,
-      ),
-    })
-  }
-
-  renderPasswordsList = () => {
-    const {passwordsList} = this.state
-    return passwordsList.map(eachPassword => (
-      <PasswordItem
-        key={eachPassword.id}
-        passwordDetails={eachPassword}
-        toggleIsLiked={this.toggleIsLiked}
-        deletePassword={this.deletePassword}
-      />
-    ))
   }
 
   onAddPassword = event => {
@@ -72,6 +53,19 @@ class Passwords extends Component {
     }))
   }
 
+  deletePassword = passwordId => {
+    const {passwordsList} = this.state
+    const updatedPasswordsList = passwordsList.filter(
+      each => each.id !== passwordId,
+    )
+
+    this.setState({passwordsList: updatedPasswordsList})
+  }
+
+  updateSearchList = event => {
+    this.setState({search: event.target.value})
+  }
+
   onChangeWebsite = event => {
     this.setState({
       website: event.target.value,
@@ -90,8 +84,24 @@ class Passwords extends Component {
     })
   }
 
+  onChecked = () => {
+    this.setState(prev => ({isChecked: !prev.isChecked}))
+  }
+
   render() {
-    const {website, username, password, passwordsList} = this.state
+    const {
+      website,
+      username,
+      password,
+      isChecked,
+      passwordsList,
+      search,
+    } = this.state
+
+    const updatedPasswordsList = passwordsList.filter(each =>
+      each.website.includes(search),
+    )
+    const count = updatedPasswordsList.length
 
     return (
       <div className="bg-container">
@@ -159,7 +169,7 @@ class Passwords extends Component {
           <div className="passwords-header">
             <div className="your-passwords-container">
               <h1 className="heading">Your Passwords</h1>
-              <p className="comments-count">{passwordsList.length}</p>
+              <p className="comments-count">{count}</p>
             </div>
             <div className="search-container">
               <img
@@ -167,22 +177,28 @@ class Passwords extends Component {
                 alt="search"
                 className="search-img"
               />
-              <input type="search" className="search" placeholder="Search" />
+              <input
+                type="search"
+                className="search"
+                placeholder="Search"
+                onChange={this.updateSearchList}
+              />
             </div>
           </div>
           <hr className="line" />
           <div className="checkbox-container">
             <input
               type="checkbox"
-              name="showPasswords"
+              checked={isChecked}
               id="showPasswords"
               className="check-box"
+              onChange={this.onChecked}
             />
             <label htmlFor="showPasswords" className="show-password">
               Show Passwords
             </label>
           </div>
-          {passwordsList.length === 0 ? (
+          {count === 0 ? (
             <div className="no-password-container">
               <img
                 src="https://assets.ccbp.in/frontend/react-js/no-passwords-img.png"
@@ -192,7 +208,16 @@ class Passwords extends Component {
               <p className="heading">No Passwords</p>
             </div>
           ) : (
-            <ul className="passwords-list">{this.renderPasswordsList()}</ul>
+            <ul className="passwords-list">
+              {updatedPasswordsList.map(eachPassword => (
+                <PasswordItem
+                  key={eachPassword.id}
+                  passwordDetails={eachPassword}
+                  isChecked={isChecked}
+                  deletePassword={this.deletePassword}
+                />
+              ))}
+            </ul>
           )}
         </div>
       </div>
